@@ -22,6 +22,8 @@ const DrfApiFetch = () => {
   },[])
 
   // クリック時に動く関数を作成する
+
+  // 検索用関数
   const getTask = () => {
     // APIのエンドポイントURLを記載 末尾にIDを指定する
     axios.get(`http://127.0.0.1:8000/api/tasks/${id}/`,{
@@ -33,12 +35,33 @@ const DrfApiFetch = () => {
     })
   }
 
+  // 削除用関数
+  const deleteTask = (id) => {
+    // APIのエンドポイントURLを記載 末尾にIDを指定する
+    axios.delete(`http://127.0.0.1:8000/api/tasks/${id}/`,{
+      // トークンを使用する必要がある
+      headers: {
+        'Authorization': 'Token f55babbc7a340c945a1412001f284586e4454ad1'
+      }})
+      // ログを出力
+      // 削除処理後に再描画させる ; setSelectedTaskの初期化
+      .then(res => {setTasks(tasks.filter(task => task.id !== id)); setSelectedTask([])})
+  }
+
 
   return (
     <div>
       <ul>
         {
-          tasks.map(task => <li key={task.id}>{task.title}  {task.id}</li>)
+          tasks.map(task =>
+          // リスト表示
+          <li key={task.id}>{task.title}  {task.id}
+            {/* 削除用ボタン */}
+            <button onClick={()=>deleteTask(task.id)}>
+              {/* ゴミ箱アイコン */}
+              <i className="fas fa-trash-alt"/>
+            </button>
+          </li>)
         }
       </ul>
 
