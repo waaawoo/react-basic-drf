@@ -6,6 +6,8 @@ const DrfApiFetch = () => {
   const [tasks, setTasks] = useState([])
   // １つの情報を取得する
   const [selectedTask, setSelectedTask] = useState([])
+  // 編集用のタスク管理ステート オブジェクト形式で管理する
+  const[editedTask, setEditedTask] = useState({id:'', title: ''})
   // IDを格納する
   const [id, setId] = useState(1)
   useEffect(() => {
@@ -46,6 +48,25 @@ const DrfApiFetch = () => {
       // ログを出力
       // 削除処理後に再描画させる ; setSelectedTaskの初期化
       .then(res => {setTasks(tasks.filter(task => task.id !== id)); setSelectedTask([])})
+  }
+
+  const newTask = (task) => {
+
+    // post送信で渡すためのdataの形式を作成
+    const data = {
+      title: task.title,
+    }
+    // DATAを受け取るために第二引数へdataを宣言
+    axios.post(`http://127.0.0.1:8000/api/tasks/`, data,{
+      // トークンを使用する必要がある
+      headers: {
+        // DBへ値を渡す場合は以下を記述
+        'Content-Type': 'application/json',
+        'Authorization': 'Token f55babbc7a340c945a1412001f284586e4454ad1'
+      }})
+      // 追加した後に画面の表示に反映させるため、配列を分解して追加する
+      .then(res => setTasks([...tasks, res.data])
+    )
   }
 
 
