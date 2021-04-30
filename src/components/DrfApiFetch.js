@@ -69,6 +69,12 @@ const DrfApiFetch = () => {
     )
   }
 
+  const handleInputChange = () => evt => {
+    const value= evt.target.value;
+    const name = evt.target.name;
+    setEditedTask({...editedTask, [name]:value})
+  }
+
 
   return (
     <div>
@@ -91,6 +97,15 @@ const DrfApiFetch = () => {
       <br/>
       <button type="button" onClick={()=>getTask()}>Get task</button>
       <h3>{selectedTask.id}: {selectedTask.title}</h3>
+
+      {/* 新規作成フォーム */}
+      <input type="text" name="title"
+        value={editedTask.title}
+        onChange={handleInputChange()}
+        placeholder="New Task?"
+        required
+      />
+      <button onClick={()=>newTask(editedTask)}>作成</button>
     </div>
   )
 }
