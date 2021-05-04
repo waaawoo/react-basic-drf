@@ -48,6 +48,10 @@ const DrfApiFetch = () => {
       // ログを出力
       // 削除処理後に再描画させる ; setSelectedTaskの初期化
       .then(res => {setTasks(tasks.filter(task => task.id !== id)); setSelectedTask([])})
+      // 更新選択中に削除ボタンを押した時の処理
+      if(editedTask.id === id){
+        setEditedTask({id: "", title: ""});
+      }
   }
 
   const newTask = (task) => {
