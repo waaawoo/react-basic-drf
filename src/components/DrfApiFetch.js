@@ -65,28 +65,56 @@ const DrfApiFetch = () => {
         'Authorization': 'Token f55babbc7a340c945a1412001f284586e4454ad1'
       }})
       // 追加した後に画面の表示に反映させるため、配列を分解して追加する
-      .then(res => setTasks([...tasks, res.data])
+      .then(res => {setTasks([...tasks, res.data]); setEditedTask({id:'',title:''})}
     )
   }
 
-  const handleInputChange = () => evt => {
-    const value= evt.target.value;
+
+  // 更新用関数
+  const editTask = (task) => {
+
+    // 更新の場合axios.putを使用する DATAを受け取るために第二引数へdataを宣言
+    axios
+      .put(`http://127.0.0.1:8000/api/tasks/${task.id}/`, task,{
+
+      // トークンを使用する必要がある
+      headers: {
+        // DBへ値を渡す場合は以下を記述
+        // 'Content-Type': 'application/json',
+        Authorization: 'Token f55babbc7a340c945a1412001f284586e4454ad1',
+      },
+    })
+      // 追加した後に画面の表示に反映させるため、配列を分解して追加する
+      .then((res) => {
+        setTasks(
+          tasks.map((task) => (task.id === editedTask.id ? res.data : task))
+        );
+        setEditedTask({ id: "", title: ""});
+      });
+  };
+
+  const handleInputChange = () => (evt) => {
+    const value = evt.target.value;
     const name = evt.target.name;
     setEditedTask({...editedTask, [name]:value})
   }
-
 
   return (
     <div>
       <ul>
         {
-          tasks.map(task =>
+          tasks.map((task) =>
           // リスト表示
-          <li key={task.id}>{task.title}  {task.id}
+          <li key={task.id}>
+            {task.title}  {task.id}
             {/* 削除用ボタン */}
             <button onClick={()=>deleteTask(task.id)}>
               {/* ゴミ箱アイコン */}
               <i className="fas fa-trash-alt"/>
+            </button>
+            <button onClick={()=>setEditedTask(task)}>
+              {/* 編集アイコン */}
+              <i className="fas fa-pen"/>
             </button>
           </li>)
         }
@@ -105,7 +133,11 @@ const DrfApiFetch = () => {
         placeholder="New Task?"
         required
       />
-      <button onClick={()=>newTask(editedTask)}>作成</button>
+
+      {/* データがある場合は編集できる */}
+      { editedTask.id ?
+      (<button onClick={()=>editTask(editedTask)}>編集</button>):
+      (<button onClick={()=>newTask(editedTask)}>作成</button> )}
     </div>
   )
 }
